@@ -22,12 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ForumClient interface {
-	CreateThread(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Confirm, error)
-	CreateMessage(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Confirm, error)
-	GetThreads(ctx context.Context, in *Search, opts ...grpc.CallOption) (*Contents, error)
-	GetMessages(ctx context.Context, in *Search, opts ...grpc.CallOption) (*Contents, error)
-	DeleteThread(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Confirm, error)
-	DeleteMessage(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Confirm, error)
+	CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error)
+	CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error)
+	GetThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Content, error)
+	GetThreads(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error)
+	GetMessages(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error)
+	DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error)
+	DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error)
 }
 
 type forumClient struct {
@@ -38,7 +39,7 @@ func NewForumClient(cc grpc.ClientConnInterface) ForumClient {
 	return &forumClient{cc}
 }
 
-func (c *forumClient) CreateThread(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Confirm, error) {
+func (c *forumClient) CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error) {
 	out := new(Confirm)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/CreateThread", in, out, opts...)
 	if err != nil {
@@ -47,7 +48,7 @@ func (c *forumClient) CreateThread(ctx context.Context, in *Content, opts ...grp
 	return out, nil
 }
 
-func (c *forumClient) CreateMessage(ctx context.Context, in *Content, opts ...grpc.CallOption) (*Confirm, error) {
+func (c *forumClient) CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error) {
 	out := new(Confirm)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/CreateMessage", in, out, opts...)
 	if err != nil {
@@ -56,7 +57,16 @@ func (c *forumClient) CreateMessage(ctx context.Context, in *Content, opts ...gr
 	return out, nil
 }
 
-func (c *forumClient) GetThreads(ctx context.Context, in *Search, opts ...grpc.CallOption) (*Contents, error) {
+func (c *forumClient) GetThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Content, error) {
+	out := new(Content)
+	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/GetThread", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *forumClient) GetThreads(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error) {
 	out := new(Contents)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/GetThreads", in, out, opts...)
 	if err != nil {
@@ -65,7 +75,7 @@ func (c *forumClient) GetThreads(ctx context.Context, in *Search, opts ...grpc.C
 	return out, nil
 }
 
-func (c *forumClient) GetMessages(ctx context.Context, in *Search, opts ...grpc.CallOption) (*Contents, error) {
+func (c *forumClient) GetMessages(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error) {
 	out := new(Contents)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/GetMessages", in, out, opts...)
 	if err != nil {
@@ -74,7 +84,7 @@ func (c *forumClient) GetMessages(ctx context.Context, in *Search, opts ...grpc.
 	return out, nil
 }
 
-func (c *forumClient) DeleteThread(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Confirm, error) {
+func (c *forumClient) DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error) {
 	out := new(Confirm)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/DeleteThread", in, out, opts...)
 	if err != nil {
@@ -83,7 +93,7 @@ func (c *forumClient) DeleteThread(ctx context.Context, in *DeleteRequest, opts 
 	return out, nil
 }
 
-func (c *forumClient) DeleteMessage(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*Confirm, error) {
+func (c *forumClient) DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error) {
 	out := new(Confirm)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/DeleteMessage", in, out, opts...)
 	if err != nil {
@@ -96,12 +106,13 @@ func (c *forumClient) DeleteMessage(ctx context.Context, in *DeleteRequest, opts
 // All implementations must embed UnimplementedForumServer
 // for forward compatibility
 type ForumServer interface {
-	CreateThread(context.Context, *Content) (*Confirm, error)
-	CreateMessage(context.Context, *Content) (*Confirm, error)
-	GetThreads(context.Context, *Search) (*Contents, error)
-	GetMessages(context.Context, *Search) (*Contents, error)
-	DeleteThread(context.Context, *DeleteRequest) (*Confirm, error)
-	DeleteMessage(context.Context, *DeleteRequest) (*Confirm, error)
+	CreateThread(context.Context, *CreateRequest) (*Confirm, error)
+	CreateMessage(context.Context, *CreateRequest) (*Confirm, error)
+	GetThread(context.Context, *IdRequest) (*Content, error)
+	GetThreads(context.Context, *SearchRequest) (*Contents, error)
+	GetMessages(context.Context, *SearchRequest) (*Contents, error)
+	DeleteThread(context.Context, *IdRequest) (*Confirm, error)
+	DeleteMessage(context.Context, *IdRequest) (*Confirm, error)
 	mustEmbedUnimplementedForumServer()
 }
 
@@ -109,22 +120,25 @@ type ForumServer interface {
 type UnimplementedForumServer struct {
 }
 
-func (UnimplementedForumServer) CreateThread(context.Context, *Content) (*Confirm, error) {
+func (UnimplementedForumServer) CreateThread(context.Context, *CreateRequest) (*Confirm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateThread not implemented")
 }
-func (UnimplementedForumServer) CreateMessage(context.Context, *Content) (*Confirm, error) {
+func (UnimplementedForumServer) CreateMessage(context.Context, *CreateRequest) (*Confirm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
 }
-func (UnimplementedForumServer) GetThreads(context.Context, *Search) (*Contents, error) {
+func (UnimplementedForumServer) GetThread(context.Context, *IdRequest) (*Content, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetThread not implemented")
+}
+func (UnimplementedForumServer) GetThreads(context.Context, *SearchRequest) (*Contents, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetThreads not implemented")
 }
-func (UnimplementedForumServer) GetMessages(context.Context, *Search) (*Contents, error) {
+func (UnimplementedForumServer) GetMessages(context.Context, *SearchRequest) (*Contents, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessages not implemented")
 }
-func (UnimplementedForumServer) DeleteThread(context.Context, *DeleteRequest) (*Confirm, error) {
+func (UnimplementedForumServer) DeleteThread(context.Context, *IdRequest) (*Confirm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteThread not implemented")
 }
-func (UnimplementedForumServer) DeleteMessage(context.Context, *DeleteRequest) (*Confirm, error) {
+func (UnimplementedForumServer) DeleteMessage(context.Context, *IdRequest) (*Confirm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
 func (UnimplementedForumServer) mustEmbedUnimplementedForumServer() {}
@@ -141,7 +155,7 @@ func RegisterForumServer(s grpc.ServiceRegistrar, srv ForumServer) {
 }
 
 func _Forum_CreateThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Content)
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,13 +167,13 @@ func _Forum_CreateThread_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/puzzleforumservice.Forum/CreateThread",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).CreateThread(ctx, req.(*Content))
+		return srv.(ForumServer).CreateThread(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Forum_CreateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Content)
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -171,13 +185,31 @@ func _Forum_CreateMessage_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/puzzleforumservice.Forum/CreateMessage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).CreateMessage(ctx, req.(*Content))
+		return srv.(ForumServer).CreateMessage(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Forum_GetThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ForumServer).GetThread(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/puzzleforumservice.Forum/GetThread",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ForumServer).GetThread(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Forum_GetThreads_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Search)
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -189,13 +221,13 @@ func _Forum_GetThreads_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/puzzleforumservice.Forum/GetThreads",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).GetThreads(ctx, req.(*Search))
+		return srv.(ForumServer).GetThreads(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Forum_GetMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Search)
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -207,13 +239,13 @@ func _Forum_GetMessages_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/puzzleforumservice.Forum/GetMessages",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).GetMessages(ctx, req.(*Search))
+		return srv.(ForumServer).GetMessages(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Forum_DeleteThread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRequest)
+	in := new(IdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -225,13 +257,13 @@ func _Forum_DeleteThread_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/puzzleforumservice.Forum/DeleteThread",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).DeleteThread(ctx, req.(*DeleteRequest))
+		return srv.(ForumServer).DeleteThread(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Forum_DeleteMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRequest)
+	in := new(IdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -243,7 +275,7 @@ func _Forum_DeleteMessage_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/puzzleforumservice.Forum/DeleteMessage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ForumServer).DeleteMessage(ctx, req.(*DeleteRequest))
+		return srv.(ForumServer).DeleteMessage(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -262,6 +294,10 @@ var Forum_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateMessage",
 			Handler:    _Forum_CreateMessage_Handler,
+		},
+		{
+			MethodName: "GetThread",
+			Handler:    _Forum_GetThread_Handler,
 		},
 		{
 			MethodName: "GetThreads",

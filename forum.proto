@@ -23,19 +23,19 @@ package puzzleforumservice;
 
 // The forum service definition.
 service Forum {
-    rpc CreateThread(Content) returns (Confirm);
-    rpc CreateMessage(Content) returns (Confirm);
-    rpc GetThreads(Search) returns (Contents);
-    rpc GetMessages(Search) returns (Contents);
-    rpc DeleteThread(DeleteRequest) returns (Confirm);
-    rpc DeleteMessage(DeleteRequest) returns (Confirm);
+    rpc CreateThread(CreateRequest) returns (Confirm);
+    rpc CreateMessage(CreateRequest) returns (Confirm);
+    rpc GetThread(IdRequest) returns (Content);
+    rpc GetThreads(SearchRequest) returns (Contents);
+    rpc GetMessages(SearchRequest) returns (Contents);
+    rpc DeleteThread(IdRequest) returns (Confirm);
+    rpc DeleteMessage(IdRequest) returns (Confirm);
 }
 
-message Content {
+message CreateRequest {
     uint64 containerId = 1;
     uint64 userId = 2;
     string text = 3;
-    int64 createdAt = 4;
 }
 
 message Confirm {
@@ -43,7 +43,19 @@ message Confirm {
     uint64 id = 2;
 }
 
-message Search {
+message IdRequest {
+    uint64 containerId = 1;
+    uint64 id = 2;
+}
+
+message Content {
+    uint64 id = 1;
+    uint64 userId = 2;
+    string text = 3;
+    int64 createdAt = 4;
+}
+
+message SearchRequest {
     uint64 containerId = 1;   
     uint64 start = 2;
     uint64 end = 3;
@@ -52,9 +64,5 @@ message Search {
 
 message Contents {
     repeated Content list = 1;
-}
-
-message DeleteRequest {
-    uint64 containerId = 1;
-    uint64 id = 2;
+    uint64 total = 2;
 }
