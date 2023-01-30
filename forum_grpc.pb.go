@@ -22,13 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ForumClient interface {
-	CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error)
-	CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error)
+	CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Response, error)
+	CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Response, error)
 	GetThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Content, error)
 	GetThreads(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error)
 	GetMessages(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*Contents, error)
-	DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error)
-	DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error)
+	DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
+	DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
 type forumClient struct {
@@ -39,8 +39,8 @@ func NewForumClient(cc grpc.ClientConnInterface) ForumClient {
 	return &forumClient{cc}
 }
 
-func (c *forumClient) CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error) {
-	out := new(Confirm)
+func (c *forumClient) CreateThread(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/CreateThread", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -48,8 +48,8 @@ func (c *forumClient) CreateThread(ctx context.Context, in *CreateRequest, opts 
 	return out, nil
 }
 
-func (c *forumClient) CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Confirm, error) {
-	out := new(Confirm)
+func (c *forumClient) CreateMessage(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/CreateMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *forumClient) GetMessages(ctx context.Context, in *SearchRequest, opts .
 	return out, nil
 }
 
-func (c *forumClient) DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error) {
-	out := new(Confirm)
+func (c *forumClient) DeleteThread(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/DeleteThread", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,8 +93,8 @@ func (c *forumClient) DeleteThread(ctx context.Context, in *IdRequest, opts ...g
 	return out, nil
 }
 
-func (c *forumClient) DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Confirm, error) {
-	out := new(Confirm)
+func (c *forumClient) DeleteMessage(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/puzzleforumservice.Forum/DeleteMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -106,13 +106,13 @@ func (c *forumClient) DeleteMessage(ctx context.Context, in *IdRequest, opts ...
 // All implementations must embed UnimplementedForumServer
 // for forward compatibility
 type ForumServer interface {
-	CreateThread(context.Context, *CreateRequest) (*Confirm, error)
-	CreateMessage(context.Context, *CreateRequest) (*Confirm, error)
+	CreateThread(context.Context, *CreateRequest) (*Response, error)
+	CreateMessage(context.Context, *CreateRequest) (*Response, error)
 	GetThread(context.Context, *IdRequest) (*Content, error)
 	GetThreads(context.Context, *SearchRequest) (*Contents, error)
 	GetMessages(context.Context, *SearchRequest) (*Contents, error)
-	DeleteThread(context.Context, *IdRequest) (*Confirm, error)
-	DeleteMessage(context.Context, *IdRequest) (*Confirm, error)
+	DeleteThread(context.Context, *IdRequest) (*Response, error)
+	DeleteMessage(context.Context, *IdRequest) (*Response, error)
 	mustEmbedUnimplementedForumServer()
 }
 
@@ -120,10 +120,10 @@ type ForumServer interface {
 type UnimplementedForumServer struct {
 }
 
-func (UnimplementedForumServer) CreateThread(context.Context, *CreateRequest) (*Confirm, error) {
+func (UnimplementedForumServer) CreateThread(context.Context, *CreateRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateThread not implemented")
 }
-func (UnimplementedForumServer) CreateMessage(context.Context, *CreateRequest) (*Confirm, error) {
+func (UnimplementedForumServer) CreateMessage(context.Context, *CreateRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
 }
 func (UnimplementedForumServer) GetThread(context.Context, *IdRequest) (*Content, error) {
@@ -135,10 +135,10 @@ func (UnimplementedForumServer) GetThreads(context.Context, *SearchRequest) (*Co
 func (UnimplementedForumServer) GetMessages(context.Context, *SearchRequest) (*Contents, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessages not implemented")
 }
-func (UnimplementedForumServer) DeleteThread(context.Context, *IdRequest) (*Confirm, error) {
+func (UnimplementedForumServer) DeleteThread(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteThread not implemented")
 }
-func (UnimplementedForumServer) DeleteMessage(context.Context, *IdRequest) (*Confirm, error) {
+func (UnimplementedForumServer) DeleteMessage(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
 func (UnimplementedForumServer) mustEmbedUnimplementedForumServer() {}
