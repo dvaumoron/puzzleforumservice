@@ -1,2 +1,3 @@
 # puzzleforumservice
-service description to store forum message
+
+[gRPC](https://grpc.io/) service description to store forum message.
