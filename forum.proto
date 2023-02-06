@@ -35,7 +35,8 @@ service Forum {
 message CreateRequest {
     uint64 containerId = 1;
     uint64 userId = 2;
-    string text = 3;
+    string title = 3;
+    string text = 4;
 }
 
 message Response {
