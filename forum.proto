@@ -27,6 +27,7 @@ service Forum {
     rpc CreateMessage(CreateRequest) returns (Response);
     rpc GetThread(IdRequest) returns (Content);
     rpc GetThreads(SearchRequest) returns (Contents);
+    // keep this separate from GetThread to allow different caching strategy
     rpc GetMessages(SearchRequest) returns (Contents);
     rpc DeleteThread(IdRequest) returns (Response);
     rpc DeleteMessage(IdRequest) returns (Response);
